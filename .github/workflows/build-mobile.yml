@@ -1,0 +1,66 @@
+name: Build Mobile Artefact
+
+on:
+  workflow_call:
+    inputs:
+      branch_name: 
+        required: true
+        type: string
+      
+      environment:
+        required: true
+        type: string
+
+      node_version:
+        required: false
+        default: '16'
+        type: string
+      
+    secrets:
+      AWS_ROLE:
+        required: true
+      ARTIFACT_S3:
+        required: true
+      APPLE_DEVELOPER_EMAIL:
+        required: true
+      APPLE_DEVELOPER_TEAM:
+        required: true
+      APPLE_DEVELOPER_PASSWORD:
+        required: true
+      KEYCHAIN_PASSWORD:
+        required: true
+
+jobs:
+  build-mobile:
+    name: "Build ${{ inputs.environment }} Mobile Artefact"
+    runs-on: ubuntu-latest
+    
+    steps: 
+      - uses: actions/checkout@v3
+        with: 
+          ref: ${{ inputs.branch_name }}
+      
+      - name: Configure Node
+        uses: actions/setup-node@v3
+        with: 
+          node-version: ${{ inputs.node_version }}
+
+      - name: Install Dependencies
+        run: echo 'npm install'
+
+      - name: Build Application Files
+        env: 
+          AWS_ROLE: ${{ secrets.AWS_ROLE }}
+          ARTIFACT_S3: ${{ secrets.ARTIFACT_S3 }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+          APPLE_DEVELOPER_TEAM: ${{ secrets.APPLE_DEVELOPER_TEAM }}
+          APPLE_DEVELOPER_EMAIL: ${{ secrets.APPLE_DEVELOPER_EMAIL }}
+          APPLE_DEVELOPER_PASSWORD: ${{ secrets.APPLE_DEVELOPER_PASSWORD }}
+        run: |
+          echo 'fastlane build ios'
+          echo 'AWS_ROLE: ${{ secrets.AWS_ROLE }}'
+          echo 'ARTIFACT_S3: ${{ secrets.ARTIFACT_S3 }}'
+          echo 'KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}'
+          echo 'APPLE_DEVELOPER_TEAM: ${{ secrets.APPLE_DEVELOPER_TEAM }}'
+          echo 'APPLE_DEVELOPER_EMAIL: ${{ secrets.APPLE_DEVELOPER_EMAIL }}'
+          echo 'APPLE_DEVELOPER_PASSWORD: ${{ secrets.APPLE_DEVELOPER_PASSWORD }}'
