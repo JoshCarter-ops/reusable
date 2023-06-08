@@ -45,6 +45,12 @@ jobs:
         with: 
           node-version: ${{ inputs.node_version }}
 
+      - name: Show Inputs
+        run: | 
+          echo 'branch_name INPUT:  ${{ inputs.branch_name }}'
+          echo 'environment INPUT:  ${{ inputs.environment }}'
+          echo 'node_version INPUT:  ${{ inputs.node_version }}'
+
       - name: Install Dependencies
         run: echo 'npm install'
 
